@@ -674,6 +674,30 @@ ch_refined_info.into{
 }
 
 
+process classify_protein{
+  // input:
+  //   file(x) from ch_x 
+  // output:
+  //   file(y) into ch_y 
+  script:
+  """
+  echo hello
+  """
+
+}
+
+process filter_protein_database{
+  // input:
+  //   file(x) from ch_x 
+  // output:
+  //   file(y) into ch_y 
+  script:
+  """
+  echo hello
+  """
+
+}
+
 
 
 

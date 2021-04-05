@@ -9,7 +9,7 @@ if (!params.reference_gtf) exit 1, "Cannot find any file for parameter --referen
 ch_reference_gtf =  Channel.value(file(params.reference_gtf))
 
 process rename_cds_to_exon{
-    publishDir "${params.outdir}/rename/", mode: 'copy'
+    publishDir "${params.outdir}/${params.name}/rename/", mode: 'copy'
     tag "${params.name} ${reference_gtf} ${sample_gtf}"
     input:
         file(reference_gtf) from ch_reference_gtf
@@ -23,7 +23,7 @@ process rename_cds_to_exon{
 
     script:
         """
-        sample_and_ref_gtf_file_rename_cds_to_exon.py \
+        rename_cds_to_exon.py \
         --sample_gtf $sample_gtf \
         --sample_name ${params.name} \
         --reference_gtf $reference_gtf \
@@ -32,7 +32,9 @@ process rename_cds_to_exon{
 }
 
 process sqanti_protein{
-    publishDir "${params.outdir}/sqanti_protein/", mode: 'copy'
+    memory '16 GB'
+
+    publishDir "${params.outdir}/${params.name}/sqanti_protein/", mode: 'copy'
     input:
         file(sample_exon) from ch_sample_transcript_exon_only
         file(sample_cds) from ch_sample_cds_renamed
@@ -55,17 +57,17 @@ process sqanti_protein{
 }
 
 
-// process protein_classification{
-//     publishDir "${params.outdir}/protein_classification/", mode: 'copy'
-//     input:
-//         file(sqanti_protein) from ch_sqanti_protein_classification
-//     output:
-//         file("${params.name}.protein_classification.tsv")
-//     script:
-//         """
-//         protein_classification.py \
-//         --sqanti_protein $sqanti_protein \
-//         --name ${params.name}
-//         """
+process protein_classification{
+    publishDir "${params.outdir}/${params.name}/protein_classification/", mode: 'copy'
+    input:
+        file(sqanti_protein) from ch_sqanti_protein_classification
+    output:
+        file("${params.name}.protein_classification.tsv")
+    script:
+        """
+        protein_classification.py \
+        --sqanti_protein $sqanti_protein \
+        --name ${params.name}
+        """
 
-// }
+}
