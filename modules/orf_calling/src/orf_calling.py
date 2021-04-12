@@ -127,7 +127,7 @@ def minus_mapping_single_chromosome(orf_coord, minus_exons, start_codons):
         logging.warning("No orf start codons found...")
         return orf_exons
     orf_exons['start_diff'] = orf_exons['orf_start'] - orf_exons['prior_size']
-    orf_exons['cds_start'] = orf_exons['exon_end'] - orf_exons['start_diff'] 
+    orf_exons['cds_start'] = orf_exons['exon_end'] - orf_exons['start_diff'] + 1
     orf_exons['gencode_atg'] = orf_exons.apply(lambda row : compare_start_minus(row, start_codons), axis = 1)
     orf_exons.drop(columns=['exon_length', 'current_size', 'prior_size', 'start_diff'], inplace = True)
     return orf_exons
@@ -260,7 +260,8 @@ def main():
 
     logging.info("Mapping orfs to gencode...")
     all_orfs = orf_mapping(orf_coord, gencode, sample_gtf, orf_seq, pool,results.num_cores)
-    
+    all_orfs.to_csv('all_orfs_mapped.tsv', sep='\t',index=False)
+
     logging.info("Calling ORFs...")
     # orfs = orf_calling(all_orfs, num_orfs_per_accession = 1)
     orfs = orf_calling_multiprocessing(all_orfs, pool, 1, results.num_cores)
