@@ -178,6 +178,7 @@ def main():
     
 
 if __name__=="__main__":
+    logging.warning("Running code in cloned repo, not container image")
     main()
 
 
